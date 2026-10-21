@@ -1,0 +1,11 @@
+# Local state and backups: can contain secrets in plain text
+*.tfstate
+*.tfstate.*
+
+# Provider plugins downloaded by init: large binaries, rebuilt on every init
+.terraform/
+
+# Variable files often hold secrets
+*.tfvars
+
+crash.log
