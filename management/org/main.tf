@@ -96,7 +96,7 @@ resource "aws_organizations_account" "workloads" {
   role_name         = "OrganizationAccountAccessRole"
   close_on_deletion = true
   tags = {
-    Account   = "workloads"
+    Account = "workloads"
   }
 
   lifecycle {
@@ -107,4 +107,32 @@ resource "aws_organizations_account" "workloads" {
 
 output "workloads_account_id" {
   value = aws_organizations_account.workloads.id
+}
+
+
+# ───────────── PHASE 3: CREATE NEW OU(for Log-Archive) ─────────────
+
+resource "aws_organizations_organizational_unit" "security" {
+  name      = "Security"
+  parent_id = aws_organizations_organization.this.roots[0].id
+}
+
+resource "aws_organizations_account" "log_archive" {
+  name              = "senpai-log-archive"
+  email             = "lowkeyjanz+aws-log-archive@gmail.com"
+  parent_id         = aws_organizations_organizational_unit.security.id
+  role_name         = "OrganizationAccountAccessRole"
+  close_on_deletion = true
+  tags = {
+    Account = "log-archive"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [role_name, iam_user_access_to_billing]
+  }
+}
+
+output "log_archive_account_id" {
+  value = aws_organizations_account.log_archive.id
 }
